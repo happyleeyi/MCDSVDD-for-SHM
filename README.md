@@ -39,7 +39,7 @@ We use the Multi Class Deep SVDD method to find the location of the defect in th
 3. if every data is mapped into the sphere of the corresponding floor, the building is on normal state. (we can notice whether the datas are inside or outside of the corresponding spheres by using the centers and the radii of each spheres which are calculated on training section.)
 4. however, if several datas are mapped outside of the sphere of the corresponding floor, the floor that the data mapped the furthest from the corresponding sphere is determined to be damaged.
 
-### 4. Result
+## Result
 ![image](https://github.com/happyleeyi/DeepSVDD/assets/173021832/d16b1941-529c-4a9b-b14f-91e0d6a49e8f)
 
 __Accuracy : 0.92__
