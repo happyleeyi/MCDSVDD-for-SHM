@@ -44,9 +44,9 @@ We use the Multi Class Deep SVDD method to find the location of the defect in th
 
 __Accuracy : 0.92__
 
-If we use several One Class Deep SVDD per floor instead of one Multi Class Deep SVDD, the accuracy was 0.64.
+If we use several One Class Deep SVDD per floor instead of one Multi Class Deep SVDD, the accuracy was __0.64__
 
-If we use the traditional SVDD instead of Multi Class Deep SVDD, the top accuracy was 0.584
+If we use the traditional SVDD instead of Multi Class Deep SVDD, the top accuracy was __0.584__
 
-If we use the anomaly detection using autoencoder method, the accuracy was 0.582 when the dimension of latent vector space was 32
+If we use the anomaly detection using autoencoder method, the accuracy was __0.582__ when the dimension of latent vector space was 32
 
