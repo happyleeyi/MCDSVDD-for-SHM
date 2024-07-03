@@ -57,21 +57,27 @@ class test_model:
         truevalue_test = np.array(truevalue_test)
         return predict_test, truevalue_test
 
-    def confusion_mat(self):
+    def confusion_mat(self, rep_dim):
         predict_test, truevalue_test = self.test()
         class_names = ['normal', '1f dam', '2f dam', '3f dam']
         matrix1 = confusion_matrix(truevalue_test, predict_test)
 
         dataframe1 = pd.DataFrame(matrix1, index=class_names, columns=class_names)
 
-
+        plt.figure(figsize=(6,6))
         sns.heatmap(dataframe1, annot=True, cbar=None, cmap="Blues")
         plt.title("Confusion Matrix_test"), plt.tight_layout()
         plt.ylabel("True Class"), plt.xlabel("Predicted Class")
+        plt.tight_layout()
+        plt.savefig('confusion matrix with MCDSVDD'+'(repdim'+str(rep_dim)+')'+'.png')
         plt.show()
 
         print(predict_test==truevalue_test)
         accuracy = np.unique(predict_test==truevalue_test, axis=0, return_counts=True)[1][1]/len(predict_test)
         print("accuracy : ", accuracy)
+
+        f = open("record.txt", "a+")
+        f.write("repdim "+str(rep_dim)+" accuracy : %f\n" %accuracy)
+        f.close()
 
 

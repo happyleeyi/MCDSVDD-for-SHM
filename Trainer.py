@@ -83,8 +83,8 @@ class train_model:
         # Load the new state_dict
         net.load_state_dict(net_dict)
 
-        torch.save(net.state_dict(), 'floormodel_state_dict.pt')
-        torch.save(ae_net.state_dict(), 'aefloormodel_state_dict.pt')
+        torch.save(net.state_dict(), 'floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt')
+        torch.save(ae_net.state_dict(), 'aefloormodel_repdim'+str(self.rep_dim)+'_state_dict.pt')
 
 
     def set_c(self, net):
@@ -114,7 +114,7 @@ class train_model:
     def train(self):
         self.pretrain()
         net = DeepSVDD(self.rep_dim).to(self.device)
-        net.load_state_dict(torch.load('floormodel_state_dict.pt'))
+        net.load_state_dict(torch.load('floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt'))
 
         c = self.set_c(net)
         R = torch.tensor([0.0,0.0,0.0], device=self.device)
@@ -180,9 +180,9 @@ class train_model:
         self.R = R
         self.c = c
 
-        torch.save(net.state_dict(), 'floormodel_state_dict.pt')
-        np.save('R.npy', self.R.clone().data.cpu().numpy())
-        np.save('c.npy',self.c.clone().data.cpu().numpy())
+        torch.save(net.state_dict(), 'floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt')
+        np.save('R_repdim'+str(self.rep_dim)+'.npy', self.R.clone().data.cpu().numpy())
+        np.save('c_repdim'+str(self.rep_dim)+'.npy',self.c.clone().data.cpu().numpy())
 
         return self.net, self.R, self.c
 

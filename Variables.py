@@ -11,13 +11,14 @@ path_damaged = ['/content/drive/MyDrive/Bookshelf Frame Structure - DSS 2000/Boo
         ]       # path where the data files saved
 
 BATCH_SIZE = 150
-rep_dim = 32
+rep_dims = [4,8,16,24,32,40,48,56,64]
 lr_pretrain = 0.001
 weight_decay_pretrain = 1e-6
 epochs_pretrain = 500
 lr = 0.001
 weight_decay = 1e-6
-epochs = 100
+epochs = 200
 num_class = 3
 eps = 0.001
 nu = 0.1
+data_saved = False
