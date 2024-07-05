@@ -5,7 +5,7 @@ import numpy as np
 from MultiClassDeepSVDD import Autoencoder,DeepSVDD
 
 class train_model:
-    def __init__(self, lr_pretrain, weight_decay_pretrain, epochs_pretrain, lr, weight_decay, epochs, device, train_loader, rep_dim, num_class, eps, nu):
+    def __init__(self, lr_pretrain, weight_decay_pretrain, epochs_pretrain, lr, weight_decay, epochs, device, train_loader, rep_dim, num_class, eps, nu, pretrained, trained):
         self.lr_pretrain = lr_pretrain
         self.weight_decay_pretrain = weight_decay_pretrain
         self.epochs_pretrain = epochs_pretrain
@@ -18,53 +18,56 @@ class train_model:
         self.num_class = num_class
         self.eps = eps
         self.nu = nu
-        self.check_pretrained = False
+        self.pretrained = pretrained
+        self.trained = trained
 
     def pretrain(self):
         ae_net = Autoencoder(self.rep_dim).to(self.device)
-        #ae_net.load_state_dict(torch.load('aefloormodel_state_dict.pt'))
 
-        lr_milestones = tuple()
-        optimizer = optim.Adam(ae_net.parameters(), lr=self.lr_pretrain, weight_decay=self.weight_decay_pretrain,
-                                    amsgrad='adam'=='amsgrad')
-        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=lr_milestones, gamma=0.1)
+        if self.pretrained:
+            ae_net.load_state_dict(torch.load('aefloormodel_repdim'+str(self.rep_dim)+'_state_dict.pt'))
+        else:
+            lr_milestones = tuple()
+            optimizer = optim.Adam(ae_net.parameters(), lr=self.lr_pretrain, weight_decay=self.weight_decay_pretrain,
+                                        amsgrad='adam'=='amsgrad')
+            scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=lr_milestones, gamma=0.1)
 
-        print('Starting pretraining...')
-        start_time = time.time()
-        ae_net.train()
-        for epoch in range(self.epochs_pretrain):
+            print('Starting pretraining...')
+            start_time = time.time()
+            ae_net.train()
+            for epoch in range(self.epochs_pretrain):
 
-            scheduler.step()
-            if epoch in lr_milestones:
-                print('  LR scheduler: new learning rate is %g' % float(scheduler.get_lr()[0]))
+                scheduler.step()
+                if epoch in lr_milestones:
+                    print('  LR scheduler: new learning rate is %g' % float(scheduler.get_lr()[0]))
 
-            loss_epoch = 0.0
-            n_batches = 0
-            epoch_start_time = time.time()
-            for X, Y in self.train_loader:
-                X = X.to(self.device)
+                loss_epoch = 0.0
+                n_batches = 0
+                epoch_start_time = time.time()
+                for X, Y in self.train_loader:
+                    X = X.to(self.device)
 
-                # Zero the network parameter gradients
-                optimizer.zero_grad()
+                    # Zero the network parameter gradients
+                    optimizer.zero_grad()
 
-                # Update network parameters via backpropagation: forward + backward + optimize
-                outputs = ae_net(X)
-                scores = torch.sum((outputs - X) ** 2, dim=tuple(range(1, outputs.dim())))
-                loss = torch.mean(scores)
-                loss.backward()
-                optimizer.step()
+                    # Update network parameters via backpropagation: forward + backward + optimize
+                    outputs = ae_net(X)
+                    scores = torch.sum((outputs - X) ** 2, dim=tuple(range(1, outputs.dim())))
+                    loss = torch.mean(scores)
+                    loss.backward()
+                    optimizer.step()
 
-                loss_epoch += loss.item()
-                n_batches += 1
+                    loss_epoch += loss.item()
+                    n_batches += 1
 
-            # log epoch statistics
-            epoch_train_time = time.time() - epoch_start_time
-            print('  Epoch {}/{}\t Time: {:.3f}\t Loss: {:.8f}'
-                        .format(epoch + 1, self.epochs_pretrain, epoch_train_time, loss_epoch / n_batches))
+                # log epoch statistics
+                epoch_train_time = time.time() - epoch_start_time
+                print('  Epoch {}/{}\t Time: {:.3f}\t Loss: {:.8f}'
+                            .format(epoch + 1, self.epochs_pretrain, epoch_train_time, loss_epoch / n_batches))
 
-        pretrain_time = time.time() - start_time
-        print('Pretraining time: %.3f' % pretrain_time)
-        print('Finished pretraining.')
+            pretrain_time = time.time() - start_time
+            print('Pretraining time: %.3f' % pretrain_time)
+            print('Finished pretraining.')
 
         self.save_weight_to_model(ae_net)
         self.check_pretrained = True
@@ -112,77 +115,86 @@ class train_model:
         return c
 
     def train(self):
-        self.pretrain()
-        net = DeepSVDD(self.rep_dim).to(self.device)
-        net.load_state_dict(torch.load('floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt'))
+        
+        if self.trained:
+            net = DeepSVDD(self.rep_dim).to(self.device)
+            net.load_state_dict(torch.load('floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt'))
+            R = np.load('R_repdim'+str(self.rep_dim)+'.npy')
+            c = np.load('c_repdim'+str(self.rep_dim)+'.npy')
+           
+        else:    
+            self.pretrain()
+            net = DeepSVDD(self.rep_dim).to(self.device)
+            net.load_state_dict(torch.load('floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt'))
+            c = self.set_c(net)
+            R = torch.tensor([0.0,0.0,0.0], device=self.device)
+            lr_milestones = tuple()
+            optimizer = optim.Adam(net.parameters(), lr=self.lr, weight_decay=self.weight_decay,
+                                        amsgrad='adam'=='amsgrad')
+            scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=lr_milestones, gamma=0.1)
+            print('Starting training...')
+            start_time = time.time()
+            net.train()
+            for epoch in range(self.epochs):
 
-        c = self.set_c(net)
-        R = torch.tensor([0.0,0.0,0.0], device=self.device)
-        lr_milestones = tuple()
-        optimizer = optim.Adam(net.parameters(), lr=self.lr, weight_decay=self.weight_decay,
-                                    amsgrad='adam'=='amsgrad')
-        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=lr_milestones, gamma=0.1)
-        print('Starting training...')
-        start_time = time.time()
-        net.train()
-        for epoch in range(self.epochs):
+                scheduler.step()
+                if epoch in lr_milestones:
+                    print('  LR scheduler: new learning rate is %g' % float(scheduler.get_lr()[0]))
 
-            scheduler.step()
-            if epoch in lr_milestones:
-                print('  LR scheduler: new learning rate is %g' % float(scheduler.get_lr()[0]))
+                loss_epoch = 0.0
+                n_batches = 0
+                dist = [[],[],[]]
 
-            loss_epoch = 0.0
-            n_batches = 0
-            dist = [[],[],[]]
+                epoch_start_time = time.time()
+                for data in self.train_loader:
+                    inputs, y = data
+                    inputs = inputs.to(self.device)
+                    y = y.to(self.device)
+                    y = y.type(torch.IntTensor)
 
-            epoch_start_time = time.time()
-            for data in self.train_loader:
-                inputs, y = data
-                inputs = inputs.to(self.device)
-                y = y.to(self.device)
-                y = y.type(torch.IntTensor)
+                    # Zero the network parameter gradients
+                    optimizer.zero_grad()
 
-                # Zero the network parameter gradients
-                optimizer.zero_grad()
+                    # Update network parameters via backpropagation: forward + backward + optimize
+                    outputs = net(inputs)
+                    loss = torch.zeros(3)
 
-                # Update network parameters via backpropagation: forward + backward + optimize
-                outputs = net(inputs)
-                loss = torch.zeros(3)
+                    c_ = c[y-1]
 
-                c_ = c[y-1]
+                    loss = torch.sum((outputs-c_)**2, dim=1)
 
-                loss = torch.sum((outputs-c_)**2, dim=1)
+                    loss = torch.mean(loss)
 
-                loss = torch.mean(loss)
+                    for i in range(outputs.shape[0]):
+                        dist[y[i]-1].append(torch.sum((outputs[i] - c[y[i]-1]) ** 2))
 
-                for i in range(outputs.shape[0]):
-                    dist[y[i]-1].append(torch.sum((outputs[i] - c[y[i]-1]) ** 2))
+                    loss.backward()
+                    optimizer.step()
+                    loss_epoch += loss.item()
+                    n_batches += 1
+                for i in range(self.num_class):
+                    d = torch.tensor(dist[i])
+                    R.data[i] = torch.tensor(np.quantile(np.sqrt(d), 1 - self.nu), device=self.device)
 
-                loss.backward()
-                optimizer.step()
-                loss_epoch += loss.item()
-                n_batches += 1
-            for i in range(self.num_class):
-                d = torch.tensor(dist[i])
-                R.data[i] = torch.tensor(np.quantile(np.sqrt(d), 1 - self.nu), device=self.device)
+                # log epoch statistics
+                epoch_train_time = time.time() - epoch_start_time
+                print('  Epoch {}/{}\t Time: {:.3f}\t Loss: {:.8f}'
+                            .format(epoch + 1, self.epochs, epoch_train_time, loss_epoch / n_batches))
 
-            # log epoch statistics
-            epoch_train_time = time.time() - epoch_start_time
-            print('  Epoch {}/{}\t Time: {:.3f}\t Loss: {:.8f}'
-                        .format(epoch + 1, self.epochs, epoch_train_time, loss_epoch / n_batches))
+            train_time = time.time() - start_time
+            print('Training time: %.3f' % train_time)
 
-        train_time = time.time() - start_time
-        print('Training time: %.3f' % train_time)
+            print('Finished training.')
+            R = R.clone().data.cpu().numpy()
+            c = c.clone().data.cpu().numpy()
 
-        print('Finished training.')
+            torch.save(net.state_dict(), 'floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt')
+            np.save('R_repdim'+str(self.rep_dim)+'.npy', R)
+            np.save('c_repdim'+str(self.rep_dim)+'.npy', c)
 
         self.net = net
         self.R = R
         self.c = c
-
-        torch.save(net.state_dict(), 'floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt')
-        np.save('R_repdim'+str(self.rep_dim)+'.npy', self.R.clone().data.cpu().numpy())
-        np.save('c_repdim'+str(self.rep_dim)+'.npy',self.c.clone().data.cpu().numpy())
 
         return self.net, self.R, self.c
 
