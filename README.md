@@ -49,8 +49,7 @@ Method to estimate the probability density function from point distribution
 ![KDE](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/2b25b0cc-cc22-42bb-948d-19ec51c0755b)
 
 #### How to use in MCDSVDD?
-![KDE - 복사본](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/8862adbe-bb1d-4cea-a29f-80e54d88cbf3)
-
+![KDE - 복사본](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/a50997dd-3c60-479d-81c2-484b4400f952)
 1. Train KDEs with outputs of training normal data obtained with trained MCDSVDD, and then use them in the test section.
 2. Put the outputs of test data obtained with MCDSVDD into the corresponding KDE for every floor.
 3. If the output probability came from KDE is bigger then threshold probability, the corresponding floor is determined as normal. However, it is not, the corresponding floor is damaged.
@@ -61,8 +60,10 @@ Method to estimate the probability density function from point distribution
 ## Result
 
 ### 1. Accuracy depending on Representation Dimension of Hyperspace
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/c9cf3f20-5cde-44b3-9cd4-6d972288868c)
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/356fffb8-7c68-4be0-82eb-6b87591e8862)
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/bc3bce72-77d3-45a0-bc7b-d7681a5f1018)
+
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/04e796c2-91eb-45bc-9bb9-880153f34635)
+
 
 Maximum accuracy was __95.58%__ on 4 representation dimensinon in 2nd test
 
@@ -91,7 +92,8 @@ It seems good to choose a bandwidth value __1 ~ 1.25__
 
 ### 5. Compare with other method
 
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/6bc28aae-a228-4198-ab92-074a6bcd0184)
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/b344502a-e56d-45fb-ae17-e1b1e81d8765)
+
 
 If we use several One Class Deep SVDD per floor instead of one Multi Class Deep SVDD, the accuracy was __0.64__
 
