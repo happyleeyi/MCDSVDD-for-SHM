@@ -1,5 +1,6 @@
 from torch.utils.data import Dataset
 from scipy import io
+from scipy import signal
 import torch #파이토치 기본모듈
 import numpy as np
 
@@ -16,9 +17,10 @@ class MyBaseDataset(Dataset):
         return self.x_data.shape[0]
 
 class get_data:
-    def __init__(self, path_undamaged, path_damaged):
+    def __init__(self, path_undamaged, path_damaged, lpf):
         self.path_undamaged = path_undamaged
         self.path_damaged = path_damaged
+        self.lpf = lpf
 
     def get_undamaged(self):
         file_name_undamaged = [[] for i in range(len(self.path_undamaged))]
@@ -42,7 +44,16 @@ class get_data:
                 f = np.delete(f,24, axis = 0)
                 ff = []
                 for m in range(8):
-                    ff.append(np.array([abs(np.fft.fft(f[:,i+m:i+4096:8])/512).T for i in range(0, len(f[0])-4096,512)]))
+                    if self.lpf:
+                        p = []
+                        for u in range(0, len(f[0])-4096,512):
+                            pp = abs(np.fft.fft(f[:,u+m:u+4096:8])/512)
+                            p_ = signal.firwin(5, cutoff=100, fs=512, pass_zero='lowpass')
+                            pp = signal.lfilter(p_,[1.0],pp)
+                            p.append(pp.T)
+                        ff.append(np.array(p))
+                    else:
+                        ff.append(np.array([abs(np.fft.fft(f[:,i+m:i+4096:8])/512).T for i in range(0, len(f[0])-4096,512)]))
                     Y_undamaged.extend([1]*int(4096/512))
                 if file_undamaged.shape[0] == 0:
                     file_undamaged = ff[0]
@@ -106,7 +117,16 @@ class get_data:
                 f = np.delete(f,24, axis = 0)
                 ff = []
                 for m in range(8):
-                    ff.append(np.array([abs(np.fft.fft(f[:,u+m:u+4096:8])/512).T for u in range(0, len(f[0])-4096,512)]))
+                    if self.lpf:
+                        p = []
+                        for u in range(0, len(f[0])-4096,512):
+                            pp = abs(np.fft.fft(f[:,u+m:u+4096:8])/512)
+                            p_ = signal.firwin(5, cutoff=100, fs=512, pass_zero='lowpass')
+                            pp = signal.lfilter(p_,[1.0],pp)
+                            p.append(pp.T)
+                        ff.append(np.array(p))
+                    else:
+                        ff.append(np.array([abs(np.fft.fft(f[:,i+m:i+4096:8])/512).T for i in range(0, len(f[0])-4096,512)]))
                     Y_damaged.extend([Y[k][i]]*int(4096/512))
                 if file_damaged.shape[0] == 0:
                     file_damaged = ff[0]
@@ -173,6 +193,7 @@ class get_data:
             np.save('X_test.npy', X_test)
             np.save('Y_test.npy', Y_test)
 
+        print(X_train.shape,Y_train.shape)
 
         train_data = MyBaseDataset(X_train, Y_train)
         test_data = MyBaseDataset(X_test, Y_test)

@@ -133,7 +133,10 @@ class test_model:
         plt.title("Confusion Matrix_test"), plt.tight_layout()
         plt.ylabel("True Class"), plt.xlabel("Predicted Class")
         plt.tight_layout()
-        plt.savefig('confusion matrix with MCDSVDD'+'(repdim'+str(rep_dim)+', bandwidth'+str(bandwidth)+')'+'.png')
+        if use_kde:
+            plt.savefig('confusion matrix with MCDSVDD'+'(repdim'+str(rep_dim)+', bandwidth'+str(bandwidth)+')'+'.png')
+        else:
+            plt.savefig('confusion matrix with MCDSVDD'+'(repdim'+str(rep_dim)+')'+'.png')
 
 
         print(predict_test==truevalue_test)
@@ -141,7 +144,10 @@ class test_model:
         print("accuracy : ", accuracy)
 
         f = open("record.txt", "a+")
-        f.write("repdim "+str(rep_dim)+', bandwidth'+str(bandwidth)+" accuracy : %f\n" %accuracy)
+        if use_kde:
+            f.write("repdim "+str(rep_dim)+', bandwidth'+str(bandwidth)+" accuracy : %f\n" %accuracy)
+        else:
+            f.write("repdim "+str(rep_dim)+" accuracy : %f\n" %accuracy)
         f.close()
 
 
