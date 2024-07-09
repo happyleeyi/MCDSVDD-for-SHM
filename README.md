@@ -39,10 +39,61 @@ We use the Multi Class Deep SVDD method to find the location of the defect in th
 3. if every data is mapped into the sphere of the corresponding floor, the building is on normal state. (we can notice whether the datas are inside or outside of the corresponding spheres by using the centers and the radii of each spheres which are calculated on training section.)
 4. however, if several datas are mapped outside of the sphere of the corresponding floor, the floor that the data mapped the furthest from the corresponding sphere is determined to be damaged.
 
-## Result
-![image](https://github.com/happyleeyi/DeepSVDD/assets/173021832/d16b1941-529c-4a9b-b14f-91e0d6a49e8f)
+### Additional Method - KDE(Kernel Density Estimation) application
+Instead of Determining hyperspheres for every floor by calculating radii (0.9 quantiles of distances) and centers(averages of data points) of spheres,
+We can use KDE to determine whether the corresponding floor is normal state or damaged.
 
-__Accuracy : 0.92__
+#### What is KDE?
+Method to estimate the probability density function from point distribution
+
+![KDE](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/2b25b0cc-cc22-42bb-948d-19ec51c0755b)
+
+#### How to use in MCDSVDD?
+![KDE - 복사본](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/a50997dd-3c60-479d-81c2-484b4400f952)
+1. Train KDEs with outputs of training normal data obtained with trained MCDSVDD, and then use them in the test section.
+2. Put the outputs of test data obtained with MCDSVDD into the corresponding KDE for every floor.
+3. If the output probability came from KDE is bigger then threshold probability, the corresponding floor is determined as normal. However, it is not, the corresponding floor is damaged.
+4. If all floors are normal, the building is normal, but if there are abnormal floors, the floor where the output probability is lowest is determined to be damaged.
+
+
+
+## Result
+
+### 1. Accuracy depending on Representation Dimension of Hyperspace
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/bc3bce72-77d3-45a0-bc7b-d7681a5f1018)
+
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/04e796c2-91eb-45bc-9bb9-880153f34635)
+
+
+Maximum accuracy was __95.58%__ on 4 representation dimensinon in 2nd test
+
+Total average accuracy is __80.73%__
+
+### 2. Accuracy depending on Radius Quantile (variable that used when we calculate the radius of sphere)
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/340df077-5ce5-4d95-a735-310183cba243)
+
+It seems that accuracy wasn't changed while the radius quantile value changes 0.7 to 0.9 
+
+So It seems good to choose a radius quantile value __0.8 ~ 0.9__
+
+### 3. Effect of application of KDE
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/7729ccd8-5d5f-49ee-b50f-d5eaa0053eca)
+
+
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/7a4d23a6-fa34-4b66-9aab-b09b95340772)
+
+MCDSVDD with KDE shows better performance than original MCDSVDD method.
+
+### 4. Accuracy of MCDSVDD with KDE depending on bandwidth (variable that determines how sharp the made distribution is)
+
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/198bbc21-c199-482d-8f03-6f02c2fd141e)
+
+It seems good to choose a bandwidth value __1 ~ 1.25__
+
+### 5. Compare with other method
+
+![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/b344502a-e56d-45fb-ae17-e1b1e81d8765)
+
 
 If we use several One Class Deep SVDD per floor instead of one Multi Class Deep SVDD, the accuracy was __0.64__
 
