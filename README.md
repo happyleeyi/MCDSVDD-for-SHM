@@ -78,7 +78,21 @@ It seems that accuracy wasn't changed while the radius quantile value changes 0.
 
 So It seems good to choose a radius quantile value __0.8 ~ 0.9__
 
-### 3. Effect of application of KDE
+### 3. Effect of Low Pass Filter
+![image](https://github.com/user-attachments/assets/226395f4-71a7-4cfa-8762-eb902e996b68)
+
+
+![image](https://github.com/user-attachments/assets/43ef0bfc-270e-418c-a9de-071391fcc108)
+
+![image](https://github.com/user-attachments/assets/7ba0694a-ba8f-4b96-8ccb-b1fbcfcd8882)
+
+Make the input Spectral Density Data smoother using Low pass Filter
+
+By this process, we can expect that the autoencoder can represent the input data more easily because it becomes smoother. 
+
+However, the accuracy didn't change dramatically.
+
+### 4. Effect of application of KDE
 ![image](https://github.com/user-attachments/assets/de5d47e2-1efd-40bc-a906-713f1b5971c9)
 
 
@@ -86,14 +100,14 @@ So It seems good to choose a radius quantile value __0.8 ~ 0.9__
 
 MCDSVDD with KDE shows better performance than original MCDSVDD method.
 
-### 4. Accuracy of MCDSVDD with KDE depending on bandwidth (variable that determines how sharp the made distribution is)
+### 5. Accuracy of MCDSVDD with KDE depending on bandwidth (variable that determines how sharp the made distribution is)
 
 ![image](https://github.com/user-attachments/assets/161b06da-a0ab-4eb5-9705-260e582a5393)
 
 
 It seems good to choose a bandwidth value __1 ~ 1.25__
 
-### 5. Compare with other method
+### 6. Compare with other method
 
 ![image](https://github.com/user-attachments/assets/6a1e6547-110b-43d1-8897-e83b60e0e734)
 
