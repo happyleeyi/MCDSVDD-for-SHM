@@ -66,8 +66,9 @@ class test_model:
         score = np.array(score)
         X = [[],[],[]]
         kde = [KernelDensity(bandwidth=bandwidth, kernel='gaussian') for i in range(3)]
-        threshold = 0.1**(rep_dim/2+5)
-
+        threshold = []
+    
+    
         self.net.eval()
         with torch.no_grad():
             for x, y in self.train_loader:
@@ -81,6 +82,8 @@ class test_model:
             X = np.array(X)
             for i in range(3):
                 kde[i].fit(X[i])
+                threshold.append(np.quantile(np.exp(kde[i].score_samples(X[i])),0.001))
+            threshold = np.array(threshold)
 
             for x, y in self.test_loader:
                 x = x.to(self.device)
@@ -136,7 +139,7 @@ class test_model:
         if use_kde:
             plt.savefig('confusion matrix with MCDSVDD'+'(repdim'+str(rep_dim)+', bandwidth'+str(bandwidth)+')'+'.png')
         else:
-            plt.savefig('confusion matrix with MCDSVDD'+'(repdim'+str(rep_dim)+')'+'.png')
+            plt.savefig('confusion matrix with MCDSVDD'+'(repdim'+str(rep_dim)+', nu'+str(nu)+')'+'.png')
 
 
         print(predict_test==truevalue_test)
@@ -147,7 +150,7 @@ class test_model:
         if use_kde:
             f.write("repdim "+str(rep_dim)+', bandwidth'+str(bandwidth)+" accuracy : %f\n" %accuracy)
         else:
-            f.write("repdim "+str(rep_dim)+" accuracy : %f\n" %accuracy)
+            f.write("repdim "+str(rep_dim)+', nu'+str(nu)+" accuracy : %f\n" %accuracy)
         f.close()
 
 

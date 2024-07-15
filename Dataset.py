@@ -48,7 +48,7 @@ class get_data:
                         p = []
                         for u in range(0, len(f[0])-4096,512):
                             pp = abs(np.fft.fft(f[:,u+m:u+4096:8])/512)
-                            p_ = signal.firwin(5, cutoff=100, fs=512, pass_zero='lowpass')
+                            p_ = signal.firwin(5, cutoff=150, fs=512, pass_zero='lowpass')
                             pp = signal.lfilter(p_,[1.0],pp)
                             p.append(pp.T)
                         ff.append(np.array(p))
@@ -121,7 +121,7 @@ class get_data:
                         p = []
                         for u in range(0, len(f[0])-4096,512):
                             pp = abs(np.fft.fft(f[:,u+m:u+4096:8])/512)
-                            p_ = signal.firwin(5, cutoff=100, fs=512, pass_zero='lowpass')
+                            p_ = signal.firwin(5, cutoff=150, fs=512, pass_zero='lowpass')
                             pp = signal.lfilter(p_,[1.0],pp)
                             p.append(pp.T)
                         ff.append(np.array(p))

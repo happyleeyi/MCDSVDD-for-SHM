@@ -114,13 +114,39 @@ class train_model:
         c[(abs(c) < self.eps) & (c > 0)] = self.eps
         return c
 
-    def train(self):
+    def train(self, nu_test=False):
         
         if self.trained:
             net = DeepSVDD(self.rep_dim).to(self.device)
             net.load_state_dict(torch.load('floormodel_repdim'+str(self.rep_dim)+'_state_dict.pt'))
             R = np.load('R_repdim'+str(self.rep_dim)+'.npy')
             c = np.load('c_repdim'+str(self.rep_dim)+'.npy')
+            
+
+            if nu_test:
+                R = torch.from_numpy(R).to(self.device)
+                c = torch.from_numpy(c).to(self.device)
+                print(R)
+                net.train()
+                with torch.no_grad():
+                    dist = [[],[],[]]
+                    for data in self.train_loader:
+                        inputs, y = data
+                        inputs = inputs.to(self.device)
+                        y = y.to(self.device)
+                        y = y.type(torch.IntTensor)
+                        outputs = net(inputs)
+
+                        for i in range(outputs.shape[0]):
+                            dist[y[i]-1].append(torch.sum((outputs[i] - c[y[i]-1]) ** 2))
+
+                for i in range(self.num_class):
+                        d = torch.tensor(dist[i])
+                        print(torch.quantile(d,0.9))
+                        R.data[i] = torch.tensor(np.quantile(np.sqrt(d), 1 - self.nu), device=self.device)
+                R = R.clone().data.cpu().numpy()
+                c = c.clone().data.cpu().numpy()
+                print(R)
            
         else:    
             self.pretrain()
