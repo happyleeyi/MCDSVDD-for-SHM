@@ -95,7 +95,7 @@ It seems good to choose a bandwidth value __1 ~ 1.25__
 
 ### 5. Compare with other method
 
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/b344502a-e56d-45fb-ae17-e1b1e81d8765)
+![image](https://github.com/user-attachments/assets/6a1e6547-110b-43d1-8897-e83b60e0e734)
 
 
 If we use several One Class Deep SVDD per floor instead of one Multi Class Deep SVDD, the accuracy was __0.64__
