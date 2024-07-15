@@ -60,39 +60,56 @@ Method to estimate the probability density function from point distribution
 ## Result
 
 ### 1. Accuracy depending on Representation Dimension of Hyperspace
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/bc3bce72-77d3-45a0-bc7b-d7681a5f1018)
-
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/04e796c2-91eb-45bc-9bb9-880153f34635)
+![image](https://github.com/user-attachments/assets/dca5a880-e477-4e9f-954b-8f04ce62d596)
 
 
-Maximum accuracy was __95.58%__ on 4 representation dimensinon in 2nd test
+![image](https://github.com/user-attachments/assets/d3ac8212-12f5-43fd-9c72-b64ba0fa60e1)
 
-Total average accuracy is __80.73%__
+Maximum accuracy was __95.58%__ on 4 representation dimensinon in 1st test
+
+The used Radius Quantile value was 0.9.
+
+Total average accuracy is __80.66%__
 
 ### 2. Accuracy depending on Radius Quantile (variable that used when we calculate the radius of sphere)
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/340df077-5ce5-4d95-a735-310183cba243)
+![image](https://github.com/user-attachments/assets/7763f92d-ef8a-4c3e-993f-482bf421beb5)
 
 It seems that accuracy wasn't changed while the radius quantile value changes 0.7 to 0.9 
 
 So It seems good to choose a radius quantile value __0.8 ~ 0.9__
 
-### 3. Effect of application of KDE
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/7729ccd8-5d5f-49ee-b50f-d5eaa0053eca)
+### 3. Effect of Low Pass Filter
+![image](https://github.com/user-attachments/assets/226395f4-71a7-4cfa-8762-eb902e996b68)
 
 
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/7a4d23a6-fa34-4b66-9aab-b09b95340772)
+![image](https://github.com/user-attachments/assets/43ef0bfc-270e-418c-a9de-071391fcc108)
+
+![image](https://github.com/user-attachments/assets/7ba0694a-ba8f-4b96-8ccb-b1fbcfcd8882)
+
+Make the input Spectral Density Data smoother using Low pass Filter
+
+By this process, we can expect that the autoencoder can represent the input data more easily because it becomes smoother. 
+
+However, the accuracy didn't change dramatically.
+
+### 4. Effect of application of KDE
+![image](https://github.com/user-attachments/assets/de5d47e2-1efd-40bc-a906-713f1b5971c9)
+
+
+![image](https://github.com/user-attachments/assets/153fd16f-bb26-44bd-901b-a0b049a05471)
 
 MCDSVDD with KDE shows better performance than original MCDSVDD method.
 
-### 4. Accuracy of MCDSVDD with KDE depending on bandwidth (variable that determines how sharp the made distribution is)
+### 5. Accuracy of MCDSVDD with KDE depending on bandwidth (variable that determines how sharp the made distribution is)
 
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/198bbc21-c199-482d-8f03-6f02c2fd141e)
+![image](https://github.com/user-attachments/assets/161b06da-a0ab-4eb5-9705-260e582a5393)
+
 
 It seems good to choose a bandwidth value __1 ~ 1.25__
 
-### 5. Compare with other method
+### 6. Compare with other method
 
-![image](https://github.com/happyleeyi/MCDSVDD-for-SHM/assets/173021832/b344502a-e56d-45fb-ae17-e1b1e81d8765)
+![image](https://github.com/user-attachments/assets/6a1e6547-110b-43d1-8897-e83b60e0e734)
 
 
 If we use several One Class Deep SVDD per floor instead of one Multi Class Deep SVDD, the accuracy was __0.64__
