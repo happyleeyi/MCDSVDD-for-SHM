@@ -21,10 +21,10 @@ print('Using PyTorch version:', torch.__version__, ' Device:', device)
 Data = get_data(path_undamaged, path_damaged, lpf)
 train_loader, test_loader = Data.load_data(BATCH_SIZE, data_saved)
 
-B = bandwidth
+#B = bandwidth
 N = nu
 for rep_dim in rep_dims:
-    for bandwidth in B:
+    for nu in N:
         SVDD_trainer = train_model(lr_pretrain, weight_decay_pretrain, epochs_pretrain, lr, weight_decay, epochs, device, train_loader, rep_dim, num_class, eps, nu, pretrained, trained)
         net, R, c = SVDD_trainer.train(nu_test=False)
 
