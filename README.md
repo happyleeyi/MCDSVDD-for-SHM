@@ -60,19 +60,20 @@ Method to estimate the probability density function from point distribution
 ## Result
 
 ### 1. Accuracy depending on Representation Dimension of Hyperspace
-![image](https://github.com/user-attachments/assets/dca5a880-e477-4e9f-954b-8f04ce62d596)
+![image](https://github.com/user-attachments/assets/590d84ca-ae95-4dd6-bb08-91f4c793d249)
 
+![image](https://github.com/user-attachments/assets/c1fbbd86-4461-4a1f-b89c-deceb29b0285)
 
-![image](https://github.com/user-attachments/assets/d3ac8212-12f5-43fd-9c72-b64ba0fa60e1)
+Top accuracy among the models of radius quantile 0.9 was __95.90%__ on 4 representation dimension in 1st test
 
-Maximum accuracy was __95.58%__ on 4 representation dimensinon in 1st test
+Top accuracy among all models was __96.195%__ on 4 representation dimension, 0.9 radius quantile in 1st test
 
 The used Radius Quantile value was 0.9.
 
-Total average accuracy is __80.66%__
+Total average accuracy is __81.07%__
 
 ### 2. Accuracy depending on Radius Quantile (variable that used when we calculate the radius of sphere)
-![image](https://github.com/user-attachments/assets/7763f92d-ef8a-4c3e-993f-482bf421beb5)
+![image](https://github.com/user-attachments/assets/4a05080a-258a-445b-b6bd-8708d8311f7c)
 
 It seems that accuracy wasn't changed while the radius quantile value changes 0.7 to 0.9 
 
@@ -81,10 +82,9 @@ So It seems good to choose a radius quantile value __0.8 ~ 0.9__
 ### 3. Effect of Low Pass Filter
 ![image](https://github.com/user-attachments/assets/226395f4-71a7-4cfa-8762-eb902e996b68)
 
+![image](https://github.com/user-attachments/assets/2b9a8011-d7fe-4fd9-b70b-1d0c9efeb910)
 
-![image](https://github.com/user-attachments/assets/43ef0bfc-270e-418c-a9de-071391fcc108)
-
-![image](https://github.com/user-attachments/assets/7ba0694a-ba8f-4b96-8ccb-b1fbcfcd8882)
+![image](https://github.com/user-attachments/assets/b56df9b3-1605-448a-a7fd-7ac2f5e394f2)
 
 Make the input Spectral Density Data smoother using Low pass Filter
 
@@ -93,23 +93,26 @@ By this process, we can expect that the autoencoder can represent the input data
 However, the accuracy didn't change dramatically.
 
 ### 4. Effect of application of KDE
-![image](https://github.com/user-attachments/assets/de5d47e2-1efd-40bc-a906-713f1b5971c9)
+![image](https://github.com/user-attachments/assets/d69072fd-e84d-4952-bba4-229156af59f6)
 
-
-![image](https://github.com/user-attachments/assets/153fd16f-bb26-44bd-901b-a0b049a05471)
+![image](https://github.com/user-attachments/assets/f4bd1de4-3812-4246-a8f2-0dbad4c48f53)
 
 MCDSVDD with KDE shows better performance than original MCDSVDD method.
 
+The original MCDSVDD was using 0.9 for radius quantile,
+
+The MCDSVDD with KDE was using 1 for bandwidth value.
+
 ### 5. Accuracy of MCDSVDD with KDE depending on bandwidth (variable that determines how sharp the made distribution is)
 
-![image](https://github.com/user-attachments/assets/161b06da-a0ab-4eb5-9705-260e582a5393)
+![image](https://github.com/user-attachments/assets/85728d3e-64a6-47b5-bea7-269da271b05a)
 
 
-It seems good to choose a bandwidth value __1 ~ 1.25__
+The accuracy didn't change as the bandwidth value change as well.
 
 ### 6. Compare with other method
 
-![image](https://github.com/user-attachments/assets/6a1e6547-110b-43d1-8897-e83b60e0e734)
+![image](https://github.com/user-attachments/assets/361aa5b1-9c4a-4473-824a-ed4a8476f2f5)
 
 
 If we use several One Class Deep SVDD per floor instead of one Multi Class Deep SVDD, the accuracy was __0.64__
@@ -117,4 +120,7 @@ If we use several One Class Deep SVDD per floor instead of one Multi Class Deep 
 If we use the traditional SVDD instead of Multi Class Deep SVDD, the top accuracy was __0.584__
 
 If we use the anomaly detection using autoencoder method, the accuracy was __0.582__ when the dimension of latent vector space was 32
+
+If we use the KDE method for anomaly detection, the top accuracy was __0.354__ when the dimension of latent vector space was 64
+
 
